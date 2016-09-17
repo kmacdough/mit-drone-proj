@@ -44,7 +44,13 @@ def new_parcel():
         destination=destination,
         location=location
     )
-    return {
-        "status": "success",
-        "data": id_
-    }
+    return jsonify(status='success', data=id_)
+
+
+@app.route('/parcel/<uuid>', methods=['GET'])
+def get_parcel(uuid):
+    parcel = Parcel.get_by_id(uuid)
+    if parcel is None:
+        jsonify(status='fail', message='No parcel existed with id = {}'.format(uuid))
+    else:
+        jsonify(status='success', data=parcel.to_dict())
