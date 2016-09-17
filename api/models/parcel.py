@@ -9,7 +9,7 @@ class Parcel(MongoObject):
     _collection_name = "parcels"
 
     def __init__(self, id_, length, width, height, weight, origin, destination, location):
-        self.id_ = id
+        self.id_ = id_
         self.length = length
         self.width = width
         self.height = height
@@ -46,12 +46,12 @@ class Parcel(MongoObject):
         :return:
         """
         return cls(
-            d["id"],
-            d["dimensions"]["width"],
-            d["dimensions"]["height"],
-            d["dimensions"]["length"],
-            d["dimensions"]["weight"],
-            Geolocation.from_dict(d["locations"]["origin"]),
-            Geolocation.from_dict(d["locations"]["current"]),
-            Geolocation.from_dict(d["locations"]["destination"]),
+            _id=d["id"],
+            width=d["dimensions"]["width"],
+            height=d["dimensions"]["height"],
+            length=d["dimensions"]["length"],
+            weight=d["dimensions"]["weight"],
+            origin=Geolocation.from_dict(d["locations"]["origin"]),
+            destination=Geolocation.from_dict(d["locations"]["destination"]),
+            location=Geolocation.from_dict(d["locations"]["current"]),
         )

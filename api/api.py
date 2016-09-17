@@ -6,7 +6,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from uuid import uuid4 as uuid
 
 from app import app, logger, db
-from models import Place, User
+from models import Place, User, Parcel
+from util import error_handle
+
 
 @app.route('/test', methods=['GET'])
 def test():
@@ -79,3 +81,41 @@ def get_all_places():
     """
     Get the data for all of the places associated with the given user
     """
+
+@app.route('/parcel', methods=['POST'])
+@error_handle
+def new_parcel():
+    request_json = request.get_json()
+    length = request_json["length"]
+    width = request_json["width"]
+    height = request_json["height"]
+    weight = request_json["weight"]
+    origin_uuid = request_json["origin"]
+    destination_uuid = request_json["destination"]
+
+    id_ = str(uuid())
+    origin = Place.get_by_id(origin_uuid).geolocation
+    destination = Place.get_by_id(destination_uuid).geolocation
+    location = origin
+
+    parcel = Parcel(
+        id_=id_,
+        length=length,
+        width=width,
+        height=height,
+        weight=weight,
+        origin=origin,
+        destination=destination,
+        location=location
+    )
+    return jsonify(status='success', data=id_)
+
+
+@app.route('/parcel/<uuid>', methods=['GET'])
+@error_handle
+def get_parcel(uuid):
+    parcel = Parcel.get_by_id(uuid)
+    if parcel is None:
+        jsonify(status='fail', message='No parcel existed with id = {}'.format(uuid))
+    else:
+        jsonify(status='success', data=parcel.to_dict())
