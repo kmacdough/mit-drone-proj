@@ -6,6 +6,7 @@ from uuid import uuid4 as uuid
 
 from app import app, logger, db
 from models import Place, Parcel
+from util import error_handle
 
 @app.route('/test', methods=['GET'])
 def test():
@@ -20,6 +21,7 @@ def test_retrieval():
 
 
 @app.route('/parcel', methods=['POST'])
+@error_handle
 def new_parcel():
     request_json = request.get_json()
     length = request_json["length"]
@@ -48,6 +50,7 @@ def new_parcel():
 
 
 @app.route('/parcel/<uuid>', methods=['GET'])
+@error_handle
 def get_parcel(uuid):
     parcel = Parcel.get_by_id(uuid)
     if parcel is None:
