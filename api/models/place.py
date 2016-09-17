@@ -17,14 +17,14 @@ class Place(object):
             "name": self.name
         }
 
-    @staticmethod
-    def from_dict(d):
+    @classmethod
+    def from_dict(cls, d):
         """
         Create a new Place from a python dictionary
         :param d: python dictionary Place
         :return:
         """
-        return Place(
+        return cls(
             d["id"],
             Geolocation.from_dict(d["geolocation"]),
             d["name"]

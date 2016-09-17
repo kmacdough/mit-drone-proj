@@ -13,13 +13,13 @@ class Trip(object):
             "stops": [stop.to_dict for stop in self.stops]
         }
 
-    @staticmethod
-    def from_dict(d):
+    @classmethod
+    def from_dict(cls, d):
         """
         Create a new Trip from a python dictionary
         :param d: python dictionary Trip
         :return:
         """
-        return Trip(
+        return cls(
             [Place.from_dict(stop_dict) for stop_dict in d["stops"]]
         )

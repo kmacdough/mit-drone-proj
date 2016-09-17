@@ -20,14 +20,14 @@ class Drone(object):
             "trip_id": self.trip.to_dict()
         }
 
-    @staticmethod
-    def from_dict(d):
+    @classmethod
+    def from_dict(cls, d):
         """
         Create a new Drone from a python dictionary
         :param d:
         :return:
         """
-        return Drone(
+        return cls(
             d["id"],
             Position.from_dict(d["position"]),
             d["trip_id"]

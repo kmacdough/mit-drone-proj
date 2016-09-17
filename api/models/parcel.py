@@ -1,3 +1,5 @@
+from models.geolocation import Geolocation
+
 class Parcel(object):
     """
     Model object representing a parcel to be sent via drone
@@ -26,8 +28,26 @@ class Parcel(object):
                 "weight": self.weight
             },
             "locations": {
-                "current": self.location.to_dict(),
                 "origin": self.origin.to_dict(),
-                "destination": self.destination.to_dict()
+                "destination": self.destination.to_dict(),
+                "current": self.location.to_dict(),
             }
         }
+
+    @classmethod
+    def from_dict(cls, d):
+        """
+        Create a new Place from a python dictionary
+        :param d: python dictionary Place
+        :return:
+        """
+        return cls(
+            d["id"],
+            d["dimensions"]["width"],
+            d["dimensions"]["height"],
+            d["dimensions"]["length"],
+            d["dimensions"]["weight"],
+            Geolocation.from_dict(d["locations"]["origin"]),
+            Geolocation.from_dict(d["locations"]["current"]),
+            Geolocation.from_dict(d["locations"]["destination"]),
+        )
