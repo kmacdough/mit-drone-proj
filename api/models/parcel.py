@@ -1,4 +1,5 @@
 from models.geolocation import Geolocation
+from models.mongo_object import MongoObject
 
 class Parcel(MongoObject):
     """

@@ -1,4 +1,6 @@
 from models.place import Place
+from models.mongo_object import MongoObject
+
 
 class Trip(MongoObject):
 
@@ -13,7 +15,7 @@ class Trip(MongoObject):
         :return:
         """
         return {
-            "stops": [stop.to_dict for stop in self.stops]
+            "stops": [stop.to_dict() for stop in self.stops]
         }
 
     @classmethod
