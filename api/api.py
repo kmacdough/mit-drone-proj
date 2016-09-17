@@ -2,10 +2,11 @@
 Defines API endpoints for accessing the application
 """
 from flask import jsonify, request
+from werkzeug.security import generate_password_hash, check_password_hash
 from uuid import uuid4 as uuid
 
 from app import app, logger, db
-from models import Place
+from models import Place, User
 
 @app.route('/test', methods=['GET'])
 def test():
@@ -18,3 +19,63 @@ def test_retrieval():
     print(Place.get_by_id(db, id_).to_dict())
     return jsonify(status='success'), 200
 
+
+############################################
+#             User Endpoints               #
+############################################
+
+@app.route('/login', methods=['POST'])
+def login():
+    email = request.headers.get('email')
+    password = request.headers.get('password')
+    if email is None or password is None:
+        return jsonify(status='fail', message='Missing username or password'), 400
+    else:
+        users = User.query(db, email=email)
+        print(users)
+        if len(users) > 0 and check_password_hash(users[0].salted_password, password):
+            resp = make_response(jsonify(status='success', data=users[0].to_dict())), 200
+            resp.set_cookie('user_id', users[0].id_)
+            return resp
+        else:
+            return jsonify(status='fail', message='Unauthorized'), 401
+
+@app.route('/user', methods=['POST'])
+def create_user():
+    """
+    Create a new user from the provided information
+    """
+    json = request.get_json()
+    user = User(str(uuid()), json['email'], generate_password_hash(json['password']))
+    result = User.insert(user, db)
+    return jsonify(status='success', data=user.id_)
+
+
+############################################
+#            Place Endpoints               #
+############################################
+
+
+@app.route('/place', methods=['POST'])
+def create_place():
+    """
+    Create a new place entry in the database
+    """
+    json = request.get_json()
+    json['id'] = str(uuid())
+    result = Place.insert(Place.from_dict(json), db)
+    return jsonify(status='success', data=json['id']), 200
+
+@app.route('/place/<place_id>', methods=['GET'])
+def get_place(place_id):
+    """
+    Get the data for the place withthe given ID
+    """
+    place = Place.get_by_id(place_id, db)
+    return jsonify(status='success', data=place.to_dict()), 200
+
+@app.route('/place', methods=['GET'])
+def get_all_places():
+    """
+    Get the data for all of the places associated with the given user
+    """

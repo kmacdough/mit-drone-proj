@@ -3,7 +3,7 @@ from models.mongo_object import MongoObject
 
 class Drone(MongoObject):
     """
-    Represends an individual drone
+    Represents an individual drone
     """
 
     _collection_name = 'drones'

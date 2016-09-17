@@ -4,3 +4,4 @@ from .mongo_object import *
 from .geolocation import *
 from .place import *
 from .trip import *
+from .user import *
