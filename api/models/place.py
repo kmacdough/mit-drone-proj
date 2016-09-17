@@ -1,6 +1,9 @@
 from models.geolocation import Geolocation
 
-class Place(object):
+class Place(MongoObject):
+
+    _collection_name = "places"
+
     def __init__(self, id_, geolocation, name):
         self.id_ = id_
         self.geolocation = geolocation

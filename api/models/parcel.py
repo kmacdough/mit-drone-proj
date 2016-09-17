@@ -1,9 +1,12 @@
 from models.geolocation import Geolocation
 
-class Parcel(object):
+class Parcel(MongoObject):
     """
     Model object representing a parcel to be sent via drone
     """
+
+    _collection_name = "parcels"
+
     def __init__(self, id_, length, width, height, weight, origin, destination, location):
         self.id_ = id
         self.length = length

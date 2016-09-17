@@ -1,6 +1,9 @@
 from models.place import Place
 
-class Trip(object):
+class Trip(MongoObject):
+
+    _collection_name = 'trips'
+
     def __init__(self, stops):
         self.stops = stops
 

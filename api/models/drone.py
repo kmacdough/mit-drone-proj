@@ -1,9 +1,12 @@
 from models.geolocation import Geolocation
 
-class Drone(object):
+class Drone(MongoObject):
     """
     Represends an individual drone
     """
+
+    _collection_name = 'drones'
+
     def __init__(self, id_, position, trip_id=None):
         self.id_ = id_
         self.position = position
