@@ -23,21 +23,21 @@ def create_basic_endpoints(base_endpoint, method_suffix, cls):
         Get the instances of the class from Mongo
         """
         all_objs = cls.query(db)
-        response = [obj.to_dict() for obj in all_objs]
+        response = [obj.to_dict(expand_refs=True, db=db) for obj in all_objs]
         return jsonify(status="success", data=response)
 
-    @app.route('/place/<obj_id>', methods=['GET'])
+    @app.route(base_endpoint + '/<obj_id>', methods=['GET'])
     @error_handle
     @rename('get_{}'.format(method_suffix))
     def get_obj(obj_id):
         """
         Get the data for the object with the given ID
         """
-        place = Place.get_by_id(obj_id, db)
+        place = cls.get_by_id(obj_id, db)
         if place is None:
             return jsonify(status='fail',
-                           message='No Place exists with id = {}'.format(obj_id))
-        return jsonify(status='success', data=place.to_dict()), 200
+                           message='No {} exists with id = {}'.format(cls.__name__, obj_id))
+        return jsonify(status='success', data=place.to_dict(expand_refs=True, db=db)), 200
 
 
 ############################################
@@ -109,7 +109,7 @@ def new_parcel():
     request_json = request.get_json()
     sender_id = request_json["sender_id"],
     recipient_id = request_json["recipient_id"],
-    origin_id= request_json["origin_id"],
+    origin_id = request_json["origin_id"],
     destination_id = request_json["destination_id"],
     length = request_json["length"]
     width = request_json["width"]
