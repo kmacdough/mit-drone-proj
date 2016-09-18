@@ -77,7 +77,8 @@ def get_place(place_id):
     """
     place = Place.get_by_id(place_id, db)
     if place is None:
-        return jsonify(status='fail', message='No Place exists with id = {}'.format(place_id))
+        return jsonify(status='fail',
+                       message='No Place exists with id = {}'.format(place_id))
     return jsonify(status='success', data=place.to_dict()), 200
 
 @app.route('/place', methods=['GET'])
@@ -86,8 +87,8 @@ def get_all_places():
     Get the data for all of the places associated with the given user
     """
     all_places = Place.query(db)
-    json_response = [place.to_dict() for place in all_places]
-    return jsonify(status="success", data=json_response)
+    response = [place.to_dict() for place in all_places]
+    return jsonify(status="success", data=response)
 
 
 ############################################
@@ -150,8 +151,8 @@ def new_drone():
 @app.route('/drones', methods=['GET'])
 def get_all_drones():
     all_drones = Drone.query(db)
-    json_response = jsonify([drone.to_dict() for drone in all_drones])
-    return jsonify(status='success', data=json_response)
+    response = [drone.to_dict() for drone in all_drones]
+    return jsonify(status='success', data=response)
     
 
 @app.route('/drones/<id>', methods=['PUT'])
