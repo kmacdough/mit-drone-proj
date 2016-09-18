@@ -7,29 +7,49 @@ from uuid import uuid4 as uuid
 
 from app import app, logger, db
 from models import Place, User, Parcel, Drone, ParcelStatus
-from util import error_handle
+from util import error_handle, rename
 
 
-@app.route('/test', methods=['GET'])
-def test():
-    logger.info('Received request at /test endpoint')
-    return jsonify(status='success', data='It works!'), 200
+def create_basic_endpoints(base_endpoint, method_suffix, cls):
+    """
+    Create basic get all and get by id endpoints for a given class with
+    a base endpoint
+    """
+    @app.route(base_endpoint, methods=['GET'])
+    @error_handle
+    @rename('get_all_{}'.format(method_suffix))
+    def get_all():
+        """
+        Get the instances of the class from Mongo
+        """
+        all_objs = cls.query(db)
+        response = [obj.to_dict(expand_refs=True, db=db) for obj in all_objs]
+        return jsonify(status="success", data=response)
 
-@app.route('/test', methods=['POST'])
-def test_retrieval():
-    id_ = int(request.get_json()['id'])
-    print(Place.get_by_id(db, id_).to_dict())
-    return jsonify(status='success'), 200
+    @app.route(base_endpoint + '/<obj_id>', methods=['GET'])
+    @error_handle
+    @rename('get_{}'.format(method_suffix))
+    def get_obj(obj_id):
+        """
+        Get the data for the object with the given ID
+        """
+        place = cls.get_by_id(obj_id, db)
+        if place is None:
+            return jsonify(status='fail',
+                           message='No {} exists with id = {}'.format(cls.__name__, obj_id))
+        return jsonify(status='success', data=place.to_dict(expand_refs=True, db=db)), 200
 
 
 ############################################
 #             User Endpoints               #
 ############################################
 
+
 @app.route('/login', methods=['POST'])
 def login():
-    email = request.headers.get('email')
-    password = request.headers.get('password')
+    post_json = request.get_json()
+    email = post_json['email']
+    password = post_json['password']
     if email is None or password is None:
         return jsonify(status='fail', message='Missing username or password'), 400
     else:
@@ -40,6 +60,7 @@ def login():
             return resp
         else:
             return jsonify(status='fail', message='Unauthorized'), 401
+
 
 @app.route('/user', methods=['POST'])
 def create_user():
@@ -61,6 +82,9 @@ def create_user():
 ############################################
 
 
+create_basic_endpoints('/place', 'place', Place)
+
+
 @app.route('/place', methods=['POST'])
 def create_place():
     """
@@ -71,25 +95,14 @@ def create_place():
     result = Place.insert(Place.from_dict(json), db)
     return jsonify(status='success', data=json['id']), 200
 
-@app.route('/place/<place_id>', methods=['GET'])
-def get_place(place_id):
-    """
-    Get the data for the place withthe given ID
-    """
-    place = Place.get_by_id(place_id, db)
-    return jsonify(status='success', data=place.to_dict()), 200
-
-@app.route('/place', methods=['GET'])
-def get_all_places():
-    """
-    Get the data for all of the places associated with the given user
-    """
-    pass
-
 
 ############################################
 #            Parcel Endpoints              #
 ############################################
+
+
+create_basic_endpoints('/parcel', 'parcel', Parcel)
+
 
 @app.route('/parcel', methods=['POST'])
 @error_handle
@@ -97,7 +110,7 @@ def new_parcel():
     request_json = request.get_json()
     sender_id = request_json["sender_id"],
     recipient_id = request_json["recipient_id"],
-    origin_id= request_json["origin_id"],
+    origin_id = request_json["origin_id"],
     destination_id = request_json["destination_id"],
     length = request_json["length"]
     width = request_json["width"]
@@ -120,18 +133,14 @@ def new_parcel():
     Parcel.insert(parcel, db)
     return jsonify(status='success', data=id_)
 
-@error_handle
-@app.route('/parcel/<uuid>', methods=['GET'])
-def get_parcel(uuid):
-    parcel = Parcel.get_by_id(uuid)
-    if parcel is None:
-        jsonify(status='fail', message='No parcel existed with id = {}'.format(uuid))
-    else:
-        jsonify(status='success', data=parcel.to_dict())
 
 ############################################
 #            Drone Endpoints               #
 ############################################
+
+
+create_basic_endpoints('/drones', 'drone', Drone)
+
 
 @app.route('/drones', methods=['POST'])
 def new_drone():
@@ -142,12 +151,6 @@ def new_drone():
 
     result = Drone.insert(Drone.from_dict(json), db)
     return jsonify(status='success', data=json['id']), 200
-
-
-@app.route('/drones', methods=['GET'])
-def get_all_drones():
-    
-    all_drones = Drone.query(db)
     
 
 @app.route('/drones/<drone_id>', methods=['PUT'])
@@ -183,12 +186,6 @@ def update_drone(drone_id):
 
     print(response_data)
     return jsonify(status='success', data=response_data)
-
-
-@app.route('/drones/<id>', methods=['GET'])
-def get_drone(id):
-    drone = Drone.get_by_id(id, db)
-    return jsonify(status='success', data=drone.to_dict())
 
 
 @app.route('/drones/nearest', methods=['GET'])

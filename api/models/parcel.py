@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from util import expand_ref
+
 from .geolocation import Geolocation
 from .mongo_object import MongoObject
 
@@ -35,12 +37,12 @@ class Parcel(MongoObject):
         self.pickup_time = pickup_time
         self.dropoff_time = dropoff_time
 
-    def to_dict(self):
+    def to_dict(self, expand_refs=False, db=None):
         """
         Return the dictionary representation of this Parcel
         :return: dictionary representation of this object
         """
-        return {
+        result_dict = {
             "id": self.id_,
             "sender_id": self.sender_id,
             "recipient_id": self.recipient_id,
@@ -57,6 +59,9 @@ class Parcel(MongoObject):
             "pickup_time": self.pickup_time,
             "dropoff_time": self.dropoff_time
         }
+        if expand_refs:
+            assert db is not None
+        return result_dict
 
     @classmethod
     def from_dict(cls, d):
