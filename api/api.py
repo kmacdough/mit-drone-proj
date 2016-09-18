@@ -10,6 +10,32 @@ from .models import Place, User, Parcel, Drone, ParcelStatus
 from .util import error_handle
 
 
+def create_basic_endpoints(cls, base_endpoint):
+    """
+    Create basic get all and get by id endpoints for a given class with
+    a base endpoint
+    """
+    @app.route(base_endpoint, methods=['GET'])
+    def get_all():
+        """
+        Get the instances of the class from Mongo
+        """
+        all_objs = cls.query(db)
+        response = [cls.to_dict() for obj in all_objs]
+        return jsonify(status="success", data=response)
+
+    @app.route('/place/<obj_id>', methods=['GET'])
+    def get_place(obj_id):
+        """
+        Get the data for the object with the given ID
+        """
+        place = Place.get_by_id(obj_id, db)
+        if place is None:
+            return jsonify(status='fail',
+                           message='No Place exists with id = {}'.format(place_id))
+        return jsonify(status='success', data=place.to_dict()), 200
+
+
 ############################################
 #             User Endpoints               #
 ############################################
@@ -60,6 +86,7 @@ def create_place():
     result = Place.insert(Place.from_dict(json), db)
     return jsonify(status='success', data=json['id']), 200
 
+
 @app.route('/place/<place_id>', methods=['GET'])
 def get_place(place_id):
     """
@@ -70,6 +97,7 @@ def get_place(place_id):
         return jsonify(status='fail',
                        message='No Place exists with id = {}'.format(place_id))
     return jsonify(status='success', data=place.to_dict()), 200
+
 
 @app.route('/place', methods=['GET'])
 def get_all_places():
