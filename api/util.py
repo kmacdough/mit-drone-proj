@@ -8,5 +8,8 @@ def error_handle(fn):
         try:
             return fn(*args, **kwargs)
         except Exception as e:
-            return jsonify(status='error', message=e.message)
+            try:
+                return jsonify(status='error', message=e.message)
+            except:
+                return jsonify(status='error', message='')
     return decorated
