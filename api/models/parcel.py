@@ -54,7 +54,7 @@ class Parcel(MongoObject):
                 "length": self.length,
                 "weight": self.weight
             },
-            "status": "status",
+            "status": self.status,
             "created_time": self.created_time,
             "pickup_time": self.pickup_time,
             "dropoff_time": self.dropoff_time

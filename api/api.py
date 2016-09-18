@@ -68,8 +68,9 @@ def create_user():
     Create a new user from the provided information
     """
     json = request.get_json()
-    if len(User.query(db, email=json['email'])) > 0:
-        return jsonify(status='fail', message='User already exists with email address')
+    users = User.query(db, email=json['email'])
+    if len(users) > 0:
+        return jsonify(status='success', data=users[0].id_)
     else:
         user = User(str(uuid()), json['email'], generate_password_hash(json['password']))
         result = User.insert(user, db)
@@ -152,8 +153,8 @@ def new_drone():
     return jsonify(status='success', data=json['id']), 200
     
 
-@app.route('/drones/<id>', methods=['PUT'])
-def update_drone():
+@app.route('/drones/<drone_id>', methods=['PUT'])
+def update_drone(drone_id):
     json = request.get_json()
     json['geolocation'] = {'latitude': json['latitude'], 'longitude': json['longitude']}
     update_json = {key: val for key, val in json.items() if key not in ['latitude', 'longitude']}
@@ -166,17 +167,38 @@ def update_drone():
         if parcel_status == ParcelStatus.DELIVERED:
             Parcel.update(db, update_json['delivered_parcel'], status=ParcelStatus.DELIVERED)
             del update_json['delivered_parcel']
-    print(drone_id, update_json)
+    response_data = {}
+    if not update_json.get('has_parcel', True):
+        unassigned = Parcel.query(db, status=ParcelStatus.UNASSIGNED)
+        earliest = None
+        for parcel in unassigned:
+            if earliest is None or parcel.created_time < earliest.created_time:
+                earliest = parcel
+        if earliest is not None:
+            update_json['parcel_id'] = earliest.id_
+            response_data = earliest.to_dict()
+            response_data['origin'] = Place.get_by_id(earliest.origin_id[0], db).to_dict()
+            response_data['destination'] = Place.get_by_id(earliest.destination_id[0], db).to_dict()
+        else:
+            print('no new parcels')
+
     Drone.update(drone_id, db, **update_json)
 
-    return jsonify(status='success', data=True)
+    print(response_data)
+    return jsonify(status='success', data=response_data)
 
 
 @app.route('/drones/nearest', methods=['GET'])
 def get_nearest_drones():
     lat = request.args.get('lat')
     lon = request.args.get('lon')
+    nearest = get_nearest_drone(lat, lon)
+    data = nearest.to_dict() if nearest is not None else None
+    return jsonify(status='success', data=data)
 
+    
+
+def get_nearest_drone(lat, lon):
     available_drones = Drone.query(db, parcel=None)
 
     best_drone = None
@@ -187,11 +209,7 @@ def get_nearest_drones():
         if distance < min_distance:
             min_distance = distance
             best_drone = available_drone
-
-    if best_drone:
-        return best_drone.id_
-    else:
-        return "None"
+    return Drone.get_by_id(best_drone.id_, db) if best_drone is not None else None=
 
 @app.route('/drones/setparcel/<drone_id>/<parcel_id>')
 def set_drone_parcel(drone_id, parcel_id):
@@ -207,5 +225,4 @@ def set_drone_parcel(drone_id, parcel_id):
         return jsonify(status='fail',
                        message='Parcel alreay assigned to a drone')
     drone.parcel_id = parcel_id
-    d
-
+    return jsonify(status='success')
