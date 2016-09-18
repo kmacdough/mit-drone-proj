@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from uuid import uuid4 as uuid
 
 from app import app, logger, db
-from models import Place, User, Parcel, Drone
+from models import Place, User, Parcel, Drone, ParcelStatus
 from util import error_handle
 
 
@@ -141,13 +141,24 @@ def new_drone():
     result = Drone.insert(Drone.from_dict(json), db)
     return jsonify(status='success', data=json['id']), 200
 
-@app.route('/drones/<id>', methods=['PUT'])
-def update_drone():
+@app.route('/drones/<drone_id>', methods=['PUT'])
+def update_drone(drone_id):
     json = request.get_json()
-
     json['geolocation'] = {'latitude': json['latitude'], 'longitude': json['longitude']}
+    update_json = {key: val for key, val in json.items() if key not in ['latitude', 'longitude']}
+    if 'status' in update_json:
+        parcel_status = {
+            'PICK UP': ParcelStatus.PENDING_PICKUP,
+            'DROP OFF': ParcelStatus.IN_DELIVERY,
+            'IDLE': ParcelStatus.DELIVERED
+        }[update_json['status']]
+        if parcel_status == ParcelStatus.DELIVERED:
+            Parcel.update(db, update_json['delivered_parcel'], status=ParcelStatus.DELIVERED)
+            del update_json['delivered_parcel']
+    print(drone_id, update_json)
+    Drone.update(drone_id, db, **update_json)
 
-    
+    return jsonify(status='success', data=True)
 
 
 @app.route('/drones/<id>', methods=['GET'])
