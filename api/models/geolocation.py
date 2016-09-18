@@ -3,9 +3,9 @@ class Geolocation(object):
     Model object representing a geolocation
     """
     def __init__(self, latitude, longitude):
-        assert -180 <= latitude <= 180
+        assert -90 <= latitude <= 90
         self.latitude = latitude
-        assert -90 <= longitude <= 90
+        assert -180 <= longitude <= 180
         self.longitude = longitude
 
     def to_dict(self):

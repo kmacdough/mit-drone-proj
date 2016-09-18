@@ -1,5 +1,5 @@
-from models.geolocation import Geolocation
-from models.mongo_object import MongoObject
+from .geolocation import Geolocation
+from .mongo_object import MongoObject
 
 class Place(MongoObject):
 
@@ -33,3 +33,8 @@ class Place(MongoObject):
             geolocation=Geolocation.from_dict(d["geolocation"]),
             name=d["name"]
         )
+
+    def __eq__(self, other):
+        return self.id_ == other.id_ and \
+            self.geolocation == other.geolocation and \
+            self.name == other.name

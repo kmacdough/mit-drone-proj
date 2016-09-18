@@ -1,5 +1,5 @@
-from models.geolocation import Geolocation
-from models.mongo_object import MongoObject
+from .geolocation import Geolocation
+from .mongo_object import MongoObject
 
 class Drone(MongoObject):
     """
@@ -36,10 +36,10 @@ class Drone(MongoObject):
         :return:
         """
         return cls(
-            _id=d['id'],
+            id_=d['id'],
             geolocation=Geolocation.from_dict(d['geolocation']),
             battery=d['battery'],
-            parcel_id=d['trip_id'],
+            parcel_id=d['parcel_id'],
         )
 
     def __eq__(self, other):

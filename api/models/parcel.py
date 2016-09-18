@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from models.geolocation import Geolocation
-from models.mongo_object import MongoObject
+from .geolocation import Geolocation
+from .mongo_object import MongoObject
 
 
 class ParcelStatus(object):
@@ -35,6 +35,29 @@ class Parcel(MongoObject):
         self.pickup_time = pickup_time
         self.dropoff_time = dropoff_time
 
+    def to_dict(self):
+        """
+        Return the dictionary representation of this Parcel
+        :return: dictionary representation of this object
+        """
+        return {
+            "id": self.id_,
+            "sender_id": self.sender_id,
+            "recipient_id": self.recipient_id,
+            "origin_id": self.origin_id,
+            "destination_id": self.destination_id,
+            "dimensions": {
+                "width": self.width,
+                "height": self.height,
+                "length": self.length,
+                "weight": self.weight
+            },
+            "status": "status",
+            "created_time": self.created_time,
+            "pickup_time": self.pickup_time,
+            "dropoff_time": self.dropoff_time
+        }
+
     @classmethod
     def from_dict(cls, d):
         """
@@ -57,25 +80,16 @@ class Parcel(MongoObject):
             dropoff_time=d["dropoff_time"],
         )
 
-    def to_dict(self):
-        """
-        Return the dictionary representation of this Parcel
-        :return: dictionary representation of this object
-        """
-        return {
-            "id": self.id_,
-            "sender_id": self.sender_id,
-            "recipient_id": self.recipient_id,
-            "origin_id": self.origin_id,
-            "destination_id": self.destination_id,
-            "dimensions": {
-                "width": self.width,
-                "height": self.height,
-                "length": self.length,
-                "weight": self.weight
-            },
-            "status": "status",
-            "creation_time": "creation_time",
-            "pickup_time": "pickup_time",
-            "dropoff_time": "dropoff_time"
-        }
+    def __eq__(self, other):
+        return self.id_ == other.id_ and \
+            self.sender_id == other.sender_id and \
+            self.recipient_id == other.recipient_id and \
+            self.origin_id == other.origin_id and \
+            self.destination_id == other.destination_id and \
+            self.width == other.width and \
+            self.height == other.height and \
+            self.length == other.length and \
+            self.weight == other.weight and \
+            self.created_time == other.created_time and \
+            self.pickup_time == other.pickup_time and \
+            self.dropoff_time == other.dropoff_time

@@ -1,4 +1,4 @@
-from models.mongo_object import MongoObject
+from .mongo_object import MongoObject
 
 class User(MongoObject):
     """
