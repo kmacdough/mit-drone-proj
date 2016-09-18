@@ -1,4 +1,4 @@
-var dataservice = new MockDataService();
+var apiProvider = new MockApiProvider();
 var mapDroneMarkers = {};
 var mapParcelMarkers = {};
 
@@ -39,11 +39,11 @@ function updateMarkers(map, markersObject, imageName, data, zIndex) {
 
 function reloadMapData(map) {
   console.log("ReloadMapData called");
-  dataservice.getAllDrones().then(function(drones){
+  apiProvider.getAllDrones().then(function(drones){
     updateMarkers(map, mapDroneMarkers, '/img/drone.png', drones, 10);
   });
   
-  dataservice.getAllParcels().then(function(parcels){
+  apiProvider.getAllParcels().then(function(parcels){
     //console.log(parcels);
     updateMarkers(map, mapParcelMarkers, '/img/parcel.png', parcels, 9);
   });
