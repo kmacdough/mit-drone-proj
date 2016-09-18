@@ -38,8 +38,8 @@ class Drone(MongoObject):
         return cls(
             id_=d['id'],
             geolocation=Geolocation.from_dict(d['geolocation']),
-            battery=d['battery'],
-            parcel_id=d['parcel_id'],
+            battery=d.get('battery', 1.0),
+            parcel_id=d.get('parcel_id', None),
         )
 
     def __eq__(self, other):

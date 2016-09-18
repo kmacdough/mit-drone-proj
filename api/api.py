@@ -81,6 +81,7 @@ def get_all_places():
     """
     Get the data for all of the places associated with the given user
     """
+    pass
 
 
 ############################################
@@ -139,13 +140,19 @@ def new_drone():
     result = Drone.insert(Drone.from_dict(json), db)
     return jsonify(status='success', data=json['id']), 200
 
+@app.route('/drones', methods=['GET'])
+def get_drones():
+    
+    all_drones = Drone.query(db)
+    
+
 @app.route('/drones/<id>', methods=['PUT'])
 def update_drone():
     json = request.get_json()
 
     json['geolocation'] = {'latitude': json['latitude'], 'longitude': json['longitude']}
 
-    
+
 
 
 @app.route('/drones/<id>', methods=['GET'])
