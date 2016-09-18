@@ -5,10 +5,10 @@ class Place(MongoObject):
 
     _collection_name = "places"
 
-    def __init__(self, id_, geolocation, name):
+    def __init__(self, id_, name, geolocation):
         self.id_ = id_
-        self.geolocation = geolocation
         self.name = name
+        self.geolocation = geolocation
 
     def to_dict(self):
         """
@@ -29,7 +29,7 @@ class Place(MongoObject):
         :return:
         """
         return cls(
-            d["id"],
-            Geolocation.from_dict(d["geolocation"]),
-            d["name"]
+            id_=d["id"],
+            geolocation=Geolocation.from_dict(d["geolocation"]),
+            name=d["name"]
         )
