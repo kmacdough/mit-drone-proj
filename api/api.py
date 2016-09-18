@@ -1,7 +1,7 @@
 """
 Defines API endpoints for accessing the application
 """
-from flask import jsonify, request
+from flask import jsonify, request, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 from uuid import uuid4 as uuid
 
@@ -34,9 +34,8 @@ def login():
         return jsonify(status='fail', message='Missing username or password'), 400
     else:
         users = User.query(db, email=email)
-        print(users)
         if len(users) > 0 and check_password_hash(users[0].salted_password, password):
-            resp = make_response(jsonify(status='success', data=users[0].to_dict())), 200
+            resp = make_response(jsonify(status='success', data=users[0].to_dict(has_salted_password=False)), 200)
             resp.set_cookie('user_id', users[0].id_)
             return resp
         else:
@@ -48,9 +47,12 @@ def create_user():
     Create a new user from the provided information
     """
     json = request.get_json()
-    user = User(str(uuid()), json['email'], generate_password_hash(json['password']))
-    result = User.insert(user, db)
-    return jsonify(status='success', data=user.id_)
+    if len(User.query(email=json['email'])) > 0:
+        return jsonify(status='fail', message='User already exists with email address')
+    else:
+        user = User(str(uuid()), json['email'], generate_password_hash(json['password']))
+        result = User.insert(user, db)
+        return jsonify(status='success', data=user.id_)
 
 
 ############################################
@@ -116,9 +118,8 @@ def new_parcel():
     )
     return jsonify(status='success', data=id_)
 
-
-@app.route('/parcel/<uuid>', methods=['GET'])
 @error_handle
+@app.route('/parcel/<uuid>', methods=['GET'])
 def get_parcel(uuid):
     parcel = Parcel.get_by_id(uuid)
     if parcel is None:
