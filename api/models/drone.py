@@ -1,5 +1,5 @@
-from models.geolocation import Geolocation
-from models.mongo_object import MongoObject
+from .geolocation import Geolocation
+from .mongo_object import MongoObject
 
 class Drone(MongoObject):
     """
@@ -8,10 +8,13 @@ class Drone(MongoObject):
 
     _collection_name = 'drones'
 
-    def __init__(self, id_, location, trip_id=None):
+    def __init__(self, id_, geolocation, battery=1.0, parcel_id=None):
         self.id_ = id_
-        self.location = location
-        self.trip_id = trip_id
+        assert isinstance(geolocation, Geolocation)
+        self.geolocation = geolocation
+        assert 0 <= battery <= 1
+        self.battery = battery
+        self.parcel_id = parcel_id
 
     def to_dict(self):
         """
@@ -19,9 +22,10 @@ class Drone(MongoObject):
         :return:
         """
         return {
-            "id": self.id_,
-            "location": self.location.to_dict(),
-            "trip_id": self.trip.to_dict()
+            'id': self.id_,
+            'geolocation': self.geolocation.to_dict(),
+            'battery': self.battery,
+            'parcel_id': self.parcel_id,
         }
 
     @classmethod
@@ -32,7 +36,14 @@ class Drone(MongoObject):
         :return:
         """
         return cls(
-            d["id"],
-            Geolocation.from_dict(d["location"]),
-            d["trip_id"]
+            id_=d['id'],
+            geolocation=Geolocation.from_dict(d['geolocation']),
+            battery=d['battery'],
+            parcel_id=d['parcel_id'],
         )
+
+    def __eq__(self, other):
+        return self.id_ == other.id_ and \
+            self.geolocation == other.geolocation and \
+            self.battery == other.battery and \
+            self.parcel_id == other.parcel_id

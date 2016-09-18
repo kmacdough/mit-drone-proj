@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from uuid import uuid4 as uuid
 
 from app import app, logger, db
-from models import Place, User, Parcel
+from models import Place, User, Parcel, Drone
 from util import error_handle
 
 
@@ -85,8 +85,13 @@ def get_all_places():
     """
     pass
 
-@error_handle
+
+############################################
+#            Parcel Endpoints              #
+############################################
+
 @app.route('/parcel', methods=['POST'])
+@error_handle
 def new_parcel():
     request_json = request.get_json()
     length = request_json["length"]
@@ -97,8 +102,8 @@ def new_parcel():
     destination_uuid = request_json["destination"]
 
     id_ = str(uuid())
-    origin = Place.get_by_id(origin_uuid).geolocation
-    destination = Place.get_by_id(destination_uuid).geolocation
+    origin = Place.get_by_id(origin_uuid, db).geolocation
+    destination = Place.get_by_id(destination_uuid, db).geolocation
     location = origin
 
     parcel = Parcel(
@@ -121,3 +126,55 @@ def get_parcel(uuid):
         jsonify(status='fail', message='No parcel existed with id = {}'.format(uuid))
     else:
         jsonify(status='success', data=parcel.to_dict())
+
+############################################
+#            Drone Endpoints               #
+############################################
+
+@app.route('/drones', methods=['POST'])
+def new_drone():
+    json = request.get_json()
+
+    json['geolocation'] = {'latitude': json['latitude'], 'longitude': json['longitude']}
+    json['id'] = str(uuid())
+
+    result = Drone.insert(Drone.from_dict(json), db)
+    return jsonify(status='success', data=json['id']), 200
+
+@app.route('/drones/<id>', methods=['PUT'])
+def update_drone():
+    json = request.get_json()
+
+    json['geolocation'] = {'latitude': json['latitude'], 'longitude': json['longitude']}
+
+    
+
+
+@app.route('/drones/<id>', methods=['GET'])
+def get_drone(id):
+    drone = Drone.get_by_id(id, db)
+    return jsonify(status='success', data=drone.to_dict())
+
+
+@app.route('/drones/nearest', methods=['GET'])
+def get_nearest_drones():
+    lat = request.args.get('lat')
+    lon = request.args.get('lon')
+
+    available_drones = Drone.query(db, parcel=None)
+
+    best_drone = None
+    min_distance = float('Inf')
+
+    for available_drone in available_drones:
+        distance = (available_drone.geolocation.longitude - float(lon)) ** 2 + (available_drone.geolocation.latitude - float(lat)) ** 2
+        if distance < min_distance:
+            min_distance = distance
+            best_drone = available_drone
+
+    if best_drone:
+        return best_drone.id_
+    else:
+        return "None"
+
+

@@ -1,14 +1,14 @@
-from models.geolocation import Geolocation
-from models.mongo_object import MongoObject
+from .geolocation import Geolocation
+from .mongo_object import MongoObject
 
 class Place(MongoObject):
 
     _collection_name = "places"
 
-    def __init__(self, id_, geolocation, name):
+    def __init__(self, id_, name, geolocation):
         self.id_ = id_
-        self.geolocation = geolocation
         self.name = name
+        self.geolocation = geolocation
 
     def to_dict(self):
         """
@@ -29,7 +29,12 @@ class Place(MongoObject):
         :return:
         """
         return cls(
-            d["id"],
-            Geolocation.from_dict(d["geolocation"]),
-            d["name"]
+            id_=d["id"],
+            geolocation=Geolocation.from_dict(d["geolocation"]),
+            name=d["name"]
         )
+
+    def __eq__(self, other):
+        return self.id_ == other.id_ and \
+            self.geolocation == other.geolocation and \
+            self.name == other.name
