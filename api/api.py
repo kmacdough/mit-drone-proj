@@ -193,3 +193,19 @@ def get_nearest_drones():
     else:
         return "None"
 
+@app.route('/drones/setparcel/<drone_id>/<parcel_id>')
+def set_drone_parcel(drone_id, parcel_id):
+    drone = Drone.get_by_id(drone_id, db)
+    if drone is None:
+        return jsonify(status='fail',
+                       message='No Drone exists with id = {}'.format(drone_id))
+    parcel = Parcel.get_by_id(parcel_id, db)
+    if parcel is None:
+        return jsonify(status='fail',
+                       message='No Parcel exists with id = {}'.format(parcel_id))
+    if parcel.status is not ParcelStatus.PENDING_PICKUP:
+        return jsonify(status='fail',
+                       message='Parcel alreay assigned to a drone')
+    drone.parcel_id = parcel_id
+    
+
