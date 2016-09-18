@@ -16,15 +16,17 @@ def create_basic_endpoints(cls, base_endpoint):
     a base endpoint
     """
     @app.route(base_endpoint, methods=['GET'])
+    @error_handle
     def get_all():
         """
         Get the instances of the class from Mongo
         """
         all_objs = cls.query(db)
-        response = [cls.to_dict() for obj in all_objs]
+        response = [obj.to_dict() for obj in all_objs]
         return jsonify(status="success", data=response)
 
     @app.route('/place/<obj_id>', methods=['GET'])
+    @error_handle
     def get_place(obj_id):
         """
         Get the data for the object with the given ID
@@ -32,7 +34,7 @@ def create_basic_endpoints(cls, base_endpoint):
         place = Place.get_by_id(obj_id, db)
         if place is None:
             return jsonify(status='fail',
-                           message='No Place exists with id = {}'.format(place_id))
+                           message='No Place exists with id = {}'.format(obj_id))
         return jsonify(status='success', data=place.to_dict()), 200
 
 
@@ -88,26 +90,7 @@ def create_place():
     return jsonify(status='success', data=json['id']), 200
 
 
-@app.route('/place/<place_id>', methods=['GET'])
-def get_place(place_id):
-    """
-    Get the data for the place withthe given ID
-    """
-    place = Place.get_by_id(place_id, db)
-    if place is None:
-        return jsonify(status='fail',
-                       message='No Place exists with id = {}'.format(place_id))
-    return jsonify(status='success', data=place.to_dict()), 200
-
-
-@app.route('/place', methods=['GET'])
-def get_all_places():
-    """
-    Get the data for all of the places associated with the given user
-    """
-    all_places = Place.query(db)
-    response = [place.to_dict() for place in all_places]
-    return jsonify(status="success", data=response)
+create_basic_endpoints(Place, '/place')
 
 
 ############################################

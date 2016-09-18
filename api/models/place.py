@@ -1,6 +1,7 @@
 from .geolocation import Geolocation
 from .mongo_object import MongoObject
 
+
 class Place(MongoObject):
 
     _collection_name = "places"
