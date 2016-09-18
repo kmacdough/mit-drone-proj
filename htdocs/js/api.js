@@ -67,6 +67,10 @@ ApiProvider.prototype.logIn = function(email, password) {
   return xhrPostPromise(this.apiUrl + "/login", {email: email, password: password});
 }
 
+MockApiProvider.prototype.logIn = function(email, password) {
+  return mockPromise({});
+}
+
 ApiProvider.prototype.logOut = function() {
   document.cookie = "user_id=; max-age=0;";
 }

@@ -1,6 +1,6 @@
 var App = function() {
   // do app initialization here;
-  this.dataService = new ApiProvider();
+  this.dataService = new MockApiProvider();
   this.loggedIn = document.cookie !== "";
   this.userId = document.cookie.split('=')[1];
 }
@@ -69,21 +69,45 @@ App.prototype.showLogInView = function() {
 }
 
 App.prototype.showMainPage = function() {
-  ReactDOM.render(
-          <section>
-          <div className="section-header">Main Page</div>
-          </section>, this.root);
+  var self = this;
+  var actionList = [{
+      key: "1",
+      action: self.showNewDeliveryPage.bind(self),
+      text: "Make new delivery"
+  }, {
+      key: "2",
+      action: self.showNewPlacePage.bind(self),
+      text: "Add place"
+  }];
+  var deliveries = [{
+      key: "1",
+      action: self.showParcelDetails.bind(self),
+      text: "Delivery one, click to show details"
+  }];
+  ReactDOM.render(<section>
+  <ListBox name="Deliveries" data={deliveries}/><br/>
+  <ListBox name="Actions" data={actionList} />
+  </section>, this.root);
 }
 
 App.prototype.showNewDeliveryPage = function() {
   ReactDOM.render(<section>
   <div className="section-header">New Delivery</div>
+  <button onClick={this.showMainPage.bind(this)}>Cancel</button>
   </section>,this.root);
 }
 
 App.prototype.showNewPlacePage = function() {
   ReactDOM.render(<section>
   <div className="section-header">Add Place</div>
+  <button onClick={this.showMainPage.bind(this)}>Cancel</button>
+  </section>,this.root);
+}
+
+App.prototype.showParcelDetails = function(parcelId) {
+  ReactDOM.render(<section>
+  <div className="section-header">Delivery Details</div>
+  <button onClick={this.showMainPage.bind(this)}>Back</button>
   </section>,this.root);
 }
 
