@@ -5,26 +5,15 @@ from flask import jsonify, request, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 from uuid import uuid4 as uuid
 
-from app import app, logger, db
-from models import Place, User, Parcel, Drone, ParcelStatus
-from util import error_handle
-
-
-@app.route('/test', methods=['GET'])
-def test():
-    logger.info('Received request at /test endpoint')
-    return jsonify(status='success', data='It works!'), 200
-
-@app.route('/test', methods=['POST'])
-def test_retrieval():
-    id_ = int(request.get_json()['id'])
-    print(Place.get_by_id(db, id_).to_dict())
-    return jsonify(status='success'), 200
+from .app import app, logger, db
+from .models import Place, User, Parcel, Drone, ParcelStatus
+from .util import error_handle
 
 
 ############################################
 #             User Endpoints               #
 ############################################
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -40,6 +29,7 @@ def login():
             return resp
         else:
             return jsonify(status='fail', message='Unauthorized'), 401
+
 
 @app.route('/user', methods=['POST'])
 def create_user():
