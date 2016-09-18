@@ -71,16 +71,20 @@ App.prototype.showLogInView = function() {
 App.prototype.showMainPage = function() {
   ReactDOM.render(
           <section>
-          Main Page
+          <div className="section-header">Main Page</div>
           </section>, this.root);
 }
 
 App.prototype.showNewDeliveryPage = function() {
-  
+  ReactDOM.render(<section>
+  <div className="section-header">New Delivery</div>
+  </section>,this.root);
 }
 
 App.prototype.showNewPlacePage = function() {
-  
+  ReactDOM.render(<section>
+  <div className="section-header">Add Place</div>
+  </section>,this.root);
 }
 
 App.prototype.showErrorPage = function(text) {
