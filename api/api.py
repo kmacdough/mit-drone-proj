@@ -94,28 +94,29 @@ def get_all_places():
 @error_handle
 def new_parcel():
     request_json = request.get_json()
+    sender_id = request_json["sender_id"],
+    recipient_id = request_json["recipient_id"],
+    origin_id= request_json["origin_id"],
+    destination_id = request_json["destination_id"],
     length = request_json["length"]
     width = request_json["width"]
     height = request_json["height"]
     weight = request_json["weight"]
-    origin_uuid = request_json["origin"]
-    destination_uuid = request_json["destination"]
 
     id_ = str(uuid())
-    origin = Place.get_by_id(origin_uuid, db).geolocation
-    destination = Place.get_by_id(destination_uuid, db).geolocation
-    location = origin
 
     parcel = Parcel(
         id_=id_,
+        sender_id=sender_id,
+        recipient_id=recipient_id,
+        origin_id=origin_id,
+        destination_id=destination_id,
         length=length,
         width=width,
         height=height,
-        weight=weight,
-        origin=origin,
-        destination=destination,
-        location=location
+        weight=weight
     )
+    Parcel.insert(parcel, db)
     return jsonify(status='success', data=id_)
 
 @error_handle
@@ -141,8 +142,15 @@ def new_drone():
     result = Drone.insert(Drone.from_dict(json), db)
     return jsonify(status='success', data=json['id']), 200
 
-@app.route('/drones/<drone_id>', methods=['PUT'])
-def update_drone(drone_id):
+
+@app.route('/drones', methods=['GET'])
+def get_all_drones():
+    
+    all_drones = Drone.query(db)
+    
+
+@app.route('/drones/<id>', methods=['PUT'])
+def update_drone():
     json = request.get_json()
     json['geolocation'] = {'latitude': json['latitude'], 'longitude': json['longitude']}
     update_json = {key: val for key, val in json.items() if key not in ['latitude', 'longitude']}
@@ -187,5 +195,3 @@ def get_nearest_drones():
         return best_drone.id_
     else:
         return "None"
-
-
