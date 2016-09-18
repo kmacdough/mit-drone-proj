@@ -192,3 +192,4 @@ def get_nearest_drones():
         return best_drone.id_
     else:
         return "None"
+

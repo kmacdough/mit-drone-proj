@@ -30,6 +30,7 @@ class Drone(MongoObject):
             'id': self.id_,
             'geolocation': self.geolocation.to_dict(),
             'battery': self.battery,
+            'parcel_id': self.parcel_id
         }
         if expand_refs:
             assert db is not None

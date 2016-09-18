@@ -26,9 +26,10 @@ def rename(newname):
         return f
     return decorator
 
+
 def expand_ref(dct, id_field, expanded_field, cls, db):
     obj_id = dct[id_field]
-    obj = cls.get_by_id(obj_id)
+    obj = cls.get_by_id(obj_id, db)
     obj_dict = obj.to_dict(expand_refs=True, db=db)
 
     del dct[id_field]
