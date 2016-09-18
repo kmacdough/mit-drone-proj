@@ -78,7 +78,12 @@ App.prototype.showMainPage = function() {
       key: "2",
       action: self.showNewPlacePage.bind(self),
       text: "Add place"
-  }];
+  }, {
+      key: "3",
+      action: function(){window.location.href="/map.html"},
+      text: "Look at the sweet realtime map"
+  } 
+  ];
   var deliveries = [{
       key: "1",
       action: self.showParcelDetails.bind(self),
@@ -124,7 +129,6 @@ App.prototype.start = function() {
   console.log("Starting app");
   this.root = document.getElementById("main");
   this.showLogInView();
-  
 }
 window.app = new App();
 app.start();
