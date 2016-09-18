@@ -207,5 +207,5 @@ def set_drone_parcel(drone_id, parcel_id):
         return jsonify(status='fail',
                        message='Parcel alreay assigned to a drone')
     drone.parcel_id = parcel_id
-    
+    d
 
