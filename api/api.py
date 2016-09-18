@@ -139,8 +139,16 @@ def new_drone():
     result = Drone.insert(Drone.from_dict(json), db)
     return jsonify(status='success', data=json['id']), 200
 
+@app.route('/drones/<id>', methods=['PUT'])
+def update_drone():
+    json = request.get_json()
 
-@app.route('/drones/<id>')
+    json['geolocation'] = {'latitude': json['latitude'], 'longitude': json['longitude']}
+
+    
+
+
+@app.route('/drones/<id>', methods=['GET'])
 def get_drone(id):
     drone = Drone.get_by_id(id, db)
     return jsonify(status='success', data=drone.to_dict())
@@ -157,13 +165,13 @@ def get_nearest_drones():
     min_distance = float('Inf')
 
     for available_drone in available_drones:
-        distance = (available_drone.geolocation.longitude - lon) ** 2 + (available_drone.geolocation.latitude - lat) ** 2
+        distance = (available_drone.geolocation.longitude - float(lon)) ** 2 + (available_drone.geolocation.latitude - float(lat)) ** 2
         if distance < min_distance:
             min_distance = distance
             best_drone = available_drone
 
     if best_drone:
-        return best_drone.id
+        return best_drone.id_
     else:
         return "None"
 
