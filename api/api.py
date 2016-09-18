@@ -142,7 +142,7 @@ def new_drone():
     return jsonify(status='success', data=json['id']), 200
 
 @app.route('/drones', methods=['GET'])
-def get_drones():
+def get_all_drones():
     
     all_drones = Drone.query(db)
     
@@ -152,8 +152,6 @@ def update_drone():
     json = request.get_json()
 
     json['geolocation'] = {'latitude': json['latitude'], 'longitude': json['longitude']}
-
-
 
 
 @app.route('/drones/<id>', methods=['GET'])

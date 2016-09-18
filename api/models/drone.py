@@ -1,5 +1,7 @@
 from .geolocation import Geolocation
 from .mongo_object import MongoObject
+from .parcel import Parcel
+from api import db
 
 class Drone(MongoObject):
     """
@@ -21,11 +23,14 @@ class Drone(MongoObject):
         Get a python dictionary representation of this object
         :return:
         """
+        if self.parcel_id:
+            parcel = Parcel.get_by_id(self.parcel_id, db)
+
         return {
             'id': self.id_,
             'geolocation': self.geolocation.to_dict(),
             'battery': self.battery,
-            'parcel_id': self.parcel_id,
+            'parcel': None if self.parcel_id is None or parcel is None else parcel.to_dict(),
         }
 
     @classmethod
