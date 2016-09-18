@@ -1,8 +1,9 @@
+from flask import jsonify
 from functools import wraps
 
 
 def error_handle(fn):
-    @wraps
+    @wraps(fn)
     def decorated(*args, **kwargs):
         try:
             return fn(*args, **kwargs)

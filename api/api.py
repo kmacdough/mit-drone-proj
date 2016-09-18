@@ -82,6 +82,11 @@ def get_all_places():
     Get the data for all of the places associated with the given user
     """
 
+
+############################################
+#            Parcel Endpoints              #
+############################################
+
 @app.route('/parcel', methods=['POST'])
 @error_handle
 def new_parcel():
