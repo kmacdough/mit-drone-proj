@@ -3,24 +3,100 @@ var App = function() {
   this.dataService = new ApiProvider();
   this.loggedIn = document.cookie !== "";
   this.userId = document.cookie.split('=')[1];
-  
 }
 
-App.prototype.start = function() {
+/*
+ * View showing methods - these will replace whatever's currently showing
+ * with the requested view.
+ */
+
+App.prototype.showListTestPage = function() {
   var data = [{
       key: "Hey",
       action: function(el){},
       text: "Test text 1"
   }, {
-      key: "Hey",
+      key: "whoa",
       action: function(el){},
       text: "Test text 2"
   }];
   var name = "My active deliveries";
-  console.log("Starting app");
-  
-  this.dataService.logIn("test", "test");
-  ReactDOM.render(<ListBox name={name} data={data} />, document.getElementById("main"));
+  ReactDOM.render(<ListBox name={name} data={data} />, this.root);
 }
 
-new App().start();
+App.prototype.submitLogInForm = function() {
+  var self = this;
+  this.dataService.logIn("test", "test")
+          .then(function(){
+            self.loggedIn = true;
+            self.showMainPage();
+          },function(e){
+            self.loggedIn = false;
+            self.showErrorPage(e.statusText)
+          });
+}
+
+App.prototype.submitRegisterForm = function() {
+  var self = this;
+  this.dataService.register("test", "test")
+          .then(function(){
+            self.showLogInView();
+          },function(e){
+            self.loggedIn = false;
+            self.showErrorPage(e.statusText)
+          });
+}
+
+App.prototype.showRegisterView = function() {
+  ReactDOM.render(
+          <section>
+          <div className="section-header">Register</div>
+          <input type="text" id="emailEntry" placeholder="e-mail"/><br/>
+          <input type="password" id="passwordEntry" placeholder="password"/><br/>
+          <button onClick={this.submitRegisterForm.bind(this)}>Register</button>
+          </section>, this.root);
+}
+
+App.prototype.showLogInView = function() {
+  ReactDOM.render(
+          <section>
+          <div className="section-header">Login</div>
+          <input type="text" id="emailEntry" placeholder="e-mail"/><br/>
+          <input type="password" id="passwordEntry" placeholder="password"/><br/>
+          <button onClick={this.submitLogInForm.bind(this)}>Login</button><br/>
+          <button onClick={this.showRegisterView.bind(this)}>Register</button>
+          </section>, this.root);
+}
+
+App.prototype.showMainPage = function() {
+  ReactDOM.render(
+          <section>
+          Main Page
+          </section>, this.root);
+}
+
+App.prototype.showNewDeliveryPage = function() {
+  
+}
+
+App.prototype.showNewPlacePage = function() {
+  
+}
+
+App.prototype.showErrorPage = function(text) {
+  ReactDOM.render(<section><h1>Error</h1>{text}</section>, this.root);
+}
+
+/**
+ * Kickstart the application.
+ * @returns {undefined}
+ */
+App.prototype.start = function() {
+  var self = this;
+  console.log("Starting app");
+  this.root = document.getElementById("main");
+  this.showLogInView();
+  
+}
+window.app = new App();
+app.start();
