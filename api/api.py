@@ -47,7 +47,7 @@ def create_user():
     Create a new user from the provided information
     """
     json = request.get_json()
-    if len(User.query(email=json['email'])) > 0:
+    if len(User.query(db, email=json['email'])) > 0:
         return jsonify(status='fail', message='User already exists with email address')
     else:
         user = User(str(uuid()), json['email'], generate_password_hash(json['password']))
@@ -145,8 +145,9 @@ def new_drone():
 
 @app.route('/drones', methods=['GET'])
 def get_all_drones():
-    
     all_drones = Drone.query(db)
+    json_response = jsonify([drone.to_dict() for drone in all_drones])
+    return jsonify(status='success', data=json_response)
     
 
 @app.route('/drones/<id>', methods=['PUT'])
@@ -172,7 +173,11 @@ def update_drone():
 @app.route('/drones/<id>', methods=['GET'])
 def get_drone(id):
     drone = Drone.get_by_id(id, db)
-    return jsonify(status='success', data=drone.to_dict())
+    if drone is None:
+        return jsonify(status='fail',
+                       message="No Drone exists with id = {}".format(id))
+    else:
+        return jsonify(status='success', data=drone.to_dict())
 
 
 @app.route('/drones/nearest', methods=['GET'])

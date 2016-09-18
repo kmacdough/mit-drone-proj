@@ -22,7 +22,7 @@ class User(MongoObject):
             "email": self.email,
         }
         if has_salted_password:
-            d['salted_password']
+            d['salted_password'] = self.salted_password
         return d
 
     @classmethod
