@@ -26,3 +26,11 @@ class MongoObject(object):
         """
         mongo_result = db.get_collection(cls._collection_name).insert(object.to_dict())
         return mongo_result
+
+    @classmethod
+    def update(cls, id_, db, **kwargs):
+        """
+        Updates an object based on the id using the kwargs
+        """
+        collection = db.get_collection(cls._collection_name)
+        collection.update({"id": id_}, {"$set": kwargs})
