@@ -76,6 +76,8 @@ def get_place(place_id):
     Get the data for the place withthe given ID
     """
     place = Place.get_by_id(place_id, db)
+    if place is None:
+        return jsonify(status='fail', message='No Place exists with id = {}'.format(place_id))
     return jsonify(status='success', data=place.to_dict()), 200
 
 @app.route('/place', methods=['GET'])
@@ -83,7 +85,9 @@ def get_all_places():
     """
     Get the data for all of the places associated with the given user
     """
-    pass
+    all_places = Place.query(db)
+    json_response = [place.to_dict() for place in all_places]
+    return jsonify(status="success", data=json_response)
 
 
 ############################################
