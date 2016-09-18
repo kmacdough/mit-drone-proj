@@ -3,6 +3,13 @@ from datetime import datetime
 from models.geolocation import Geolocation
 from models.mongo_object import MongoObject
 
+
+class ParcelStatus(object):
+    UNASSIGNED = "unassigned"
+    PENDING_PICKUP = "pending_pickup"
+    IN_DELIVERY = "in_delivery"
+    DELIVERED = "delivered"
+
 class Parcel(MongoObject):
     """
     Model object representing a parcel to be sent via drone
@@ -72,10 +79,3 @@ class Parcel(MongoObject):
             "pickup_time": "pickup_time",
             "dropoff_time": "dropoff_time"
         }
-
-
-class ParcelStatus(object):
-    UNASSIGNED = "unassigned"
-    PENDING_PICKUP = "pending_pickup"
-    IN_DELIVERY = "in_delivery"
-    DELIVERED = "delivered"
