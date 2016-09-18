@@ -1,0 +1,67 @@
+{
+    "duration": 30,
+    "users": [
+        {
+            "email": "sender email",
+            "password": "foobar"
+        },
+        {
+            "email": "recipient email",
+            "password": "helloworld"
+        }
+    ],
+    "drones": [
+        {
+            "lat": 80,
+            "long": 80
+        },
+        {
+            "lat": 60,
+            "long": 34
+        }
+    ],
+    "parcels": [
+        {
+            "latitude": 53,
+            "longitude": 38,
+            "time": 1,
+            "width": 12,
+            "length": 12,
+            "height": 12,
+            "weight": 10,
+            "origin": "Friend's House",
+            "destination": "My House",
+            "sender": "recipient email",
+            "recipient": "sender email"
+        },
+        {
+            "latitude": 126,
+            "longitude": 127,
+            "time": 12,
+            "length": 13,
+            "width": 7,
+            "height": 8,
+            "weight": 20,
+            "origin": "My House",
+            "destination": "Friend's House",
+            "sender": "sender email",
+            "recipient": "recipient email"
+        }
+    ],
+    "places": [
+        {
+            "name": "My House",
+            "geolocation": {
+                "latitude": 43,
+                "longitude": 21
+            }
+        },
+        {
+            "name": "Friend's House",
+            "geolocation": {
+                "latitude": 75,
+                "longitude": 8
+            }
+        }
+    ]
+}
