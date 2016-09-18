@@ -10,7 +10,7 @@ from models import Place, User, Parcel, Drone, ParcelStatus
 from util import error_handle
 
 
-def create_basic_endpoints(cls, base_endpoint):
+def create_basic_endpoints(base_endpoint, cls):
     """
     Create basic get all and get by id endpoints for a given class with
     a base endpoint
@@ -79,6 +79,9 @@ def create_user():
 ############################################
 
 
+create_basic_endpoints('/place', Place)
+
+
 @app.route('/place', methods=['POST'])
 def create_place():
     """
@@ -90,12 +93,13 @@ def create_place():
     return jsonify(status='success', data=json['id']), 200
 
 
-create_basic_endpoints(Place, '/place')
-
-
 ############################################
 #            Parcel Endpoints              #
 ############################################
+
+
+create_basic_endpoints('/parcel', Place)
+
 
 @app.route('/parcel', methods=['POST'])
 @error_handle
@@ -126,18 +130,14 @@ def new_parcel():
     Parcel.insert(parcel, db)
     return jsonify(status='success', data=id_)
 
-@error_handle
-@app.route('/parcel/<uuid>', methods=['GET'])
-def get_parcel(uuid):
-    parcel = Parcel.get_by_id(uuid)
-    if parcel is None:
-        jsonify(status='fail', message='No parcel existed with id = {}'.format(uuid))
-    else:
-        jsonify(status='success', data=parcel.to_dict())
 
 ############################################
 #            Drone Endpoints               #
 ############################################
+
+
+create_basic_endpoints('/drones', Drone)
+
 
 @app.route('/drones', methods=['POST'])
 def new_drone():
@@ -148,13 +148,6 @@ def new_drone():
 
     result = Drone.insert(Drone.from_dict(json), db)
     return jsonify(status='success', data=json['id']), 200
-
-
-@app.route('/drones', methods=['GET'])
-def get_all_drones():
-    all_drones = Drone.query(db)
-    response = [drone.to_dict() for drone in all_drones]
-    return jsonify(status='success', data=response)
     
 
 @app.route('/drones/<id>', methods=['PUT'])
@@ -175,16 +168,6 @@ def update_drone():
     Drone.update(drone_id, db, **update_json)
 
     return jsonify(status='success', data=True)
-
-
-@app.route('/drones/<id>', methods=['GET'])
-def get_drone(id):
-    drone = Drone.get_by_id(id, db)
-    if drone is None:
-        return jsonify(status='fail',
-                       message="No Drone exists with id = {}".format(id))
-    else:
-        return jsonify(status='success', data=drone.to_dict())
 
 
 @app.route('/drones/nearest', methods=['GET'])
