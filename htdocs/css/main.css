@@ -35,18 +35,19 @@ header h1 {
 .list-header {
   font-weight: bold;
   padding-bottom: 5px;
+  padding-top: 5px;
   border-bottom: 1px solid;
 }
 
 .list-item {
   display: block;
-  width: 100%;
   overflow: hidden;
   line-height: 40px;
   border-bottom: 1px solid;
   padding-left: 5px;
   text-decoration: none;
   color: black;
+  text-align: left;
 }
 
 .list-item:after {
