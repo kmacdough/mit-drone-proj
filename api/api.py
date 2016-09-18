@@ -5,9 +5,9 @@ from flask import jsonify, request, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 from uuid import uuid4 as uuid
 
-from .app import app, logger, db
-from .models import Place, User, Parcel, Drone, ParcelStatus
-from .util import error_handle
+from app import app, logger, db
+from models import Place, User, Parcel, Drone, ParcelStatus
+from util import error_handle
 
 
 def create_basic_endpoints(cls, base_endpoint):
@@ -43,8 +43,9 @@ def create_basic_endpoints(cls, base_endpoint):
 
 @app.route('/login', methods=['POST'])
 def login():
-    email = request.headers.get('email')
-    password = request.headers.get('password')
+    post_json = request.get_json()
+    email = post_json['email']
+    password = post_json['password']
     if email is None or password is None:
         return jsonify(status='fail', message='Missing username or password'), 400
     else:
