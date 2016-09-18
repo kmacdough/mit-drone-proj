@@ -9,17 +9,18 @@
     <script type="text/javascript" src="js/libs/react/react-dom.min.js"></script>
     <script type="text/javascript" src="js/libs/babel-core/browser.min.js"></script>
     <script type="text/javascript" src="js/dataservice.js"></script>
-    <script type="text/babel" src="js/widgets.js"></script>
+    <script type="text/javascript" src="js/map.js"></script>
   </head>
   <body>
-    <header>
+    <header style='position: fixed; width: 100%; z-index: 100; background-color: white;'>
       <h1>Drone Project</h1>
     </header>
     <main id="main">
+      <div id='map'></div>
+      <script async defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB64W3e4vf1XkSLkfyrkA8qSf9-0jmKT6Q&callback=initMap">
+    </script>
     </main>
-    <footer>
-      &copy; 2016 Nick Flanders, Kevin McDonough, Maxton Connor, Eric Liu
-    </footer>
-    <script type="text/babel" src="js/App.js"></script>
+    <footer></footer>
   </body>
 </html>
