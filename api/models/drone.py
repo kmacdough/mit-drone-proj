@@ -2,6 +2,7 @@ from .geolocation import Geolocation
 from .mongo_object import MongoObject
 from .parcel import Parcel
 from api import db
+from util import expand_ref
 
 class Drone(MongoObject):
     """
@@ -18,20 +19,22 @@ class Drone(MongoObject):
         self.battery = battery
         self.parcel_id = parcel_id
 
-    def to_dict(self):
+    def to_dict(self, expand_refs=False, db=None):
         """
         Get a python dictionary representation of this object
+
+        NOTE: if expand_refs == True then this is not reversed by from_dict
         :return:
         """
-        if self.parcel_id:
-            parcel = Parcel.get_by_id(self.parcel_id, db)
-
-        return {
+        result_dict = {
             'id': self.id_,
             'geolocation': self.geolocation.to_dict(),
             'battery': self.battery,
-            'parcel': None if self.parcel_id is None or parcel is None else parcel.to_dict(),
         }
+        if expand_refs:
+            assert db is not None
+            expand_ref(result_dict, 'parcel_id', 'parcel', Parcel, db)
+        return result_dict
 
     @classmethod
     def from_dict(cls, d):

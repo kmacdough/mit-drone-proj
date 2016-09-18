@@ -7,16 +7,17 @@ from uuid import uuid4 as uuid
 
 from app import app, logger, db
 from models import Place, User, Parcel, Drone, ParcelStatus
-from util import error_handle
+from util import error_handle, rename
 
 
-def create_basic_endpoints(base_endpoint, cls):
+def create_basic_endpoints(base_endpoint, method_suffix, cls):
     """
     Create basic get all and get by id endpoints for a given class with
     a base endpoint
     """
     @app.route(base_endpoint, methods=['GET'])
     @error_handle
+    @rename('get_all_{}'.format(method_suffix))
     def get_all():
         """
         Get the instances of the class from Mongo
@@ -27,7 +28,8 @@ def create_basic_endpoints(base_endpoint, cls):
 
     @app.route('/place/<obj_id>', methods=['GET'])
     @error_handle
-    def get_place(obj_id):
+    @rename('get_{}'.format(method_suffix))
+    def get_obj(obj_id):
         """
         Get the data for the object with the given ID
         """
@@ -79,7 +81,7 @@ def create_user():
 ############################################
 
 
-create_basic_endpoints('/place', Place)
+create_basic_endpoints('/place', 'place', Place)
 
 
 @app.route('/place', methods=['POST'])
@@ -98,7 +100,7 @@ def create_place():
 ############################################
 
 
-create_basic_endpoints('/parcel', Place)
+create_basic_endpoints('/parcel', 'parcel', Parcel)
 
 
 @app.route('/parcel', methods=['POST'])
@@ -136,7 +138,7 @@ def new_parcel():
 ############################################
 
 
-create_basic_endpoints('/drones', Drone)
+create_basic_endpoints('/drones', 'drone', Drone)
 
 
 @app.route('/drones', methods=['POST'])
