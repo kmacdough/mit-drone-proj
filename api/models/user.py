@@ -12,20 +12,22 @@ class User(MongoObject):
         self.email = email
         self.salted_password = salted_password
 
-    def to_dict(self):
+    def to_dict(self, has_salted_password=True):
         """
         Return the dictionary representation of this user
         :return: dictionary representation of this user
         """
-        return {
+        d = {
             "id": self.id_,
             "email": self.email,
-            "salted_password": self.salted_password
         }
+        if has_salted_password:
+            d['salted_password']
+        return d
 
     @classmethod
     def from_dict(cls, d):
         """
         Return a new User from the given dict
         """
-        return cls(d['id'], d['email'])
+        return cls(d['id'], d['email'], d['salted_password'])

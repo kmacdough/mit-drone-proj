@@ -8,9 +8,9 @@ class Drone(MongoObject):
 
     _collection_name = 'drones'
 
-    def __init__(self, id_, position, trip_id=None):
+    def __init__(self, id_, location, trip_id=None):
         self.id_ = id_
-        self.position = position
+        self.location = location
         self.trip_id = trip_id
 
     def to_dict(self):
@@ -20,7 +20,7 @@ class Drone(MongoObject):
         """
         return {
             "id": self.id_,
-            "position": self.position.to_dict(),
+            "location": self.location.to_dict(),
             "trip_id": self.trip.to_dict()
         }
 
@@ -33,6 +33,6 @@ class Drone(MongoObject):
         """
         return cls(
             d["id"],
-            Position.from_dict(d["position"]),
+            Geolocation.from_dict(d["location"]),
             d["trip_id"]
         )
